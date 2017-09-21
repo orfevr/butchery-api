@@ -1,0 +1,15 @@
+{
+    "name": "butchery-service",
+    "version": "1.0.0",
+    "author": "DT (orfevr)",
+    "license": "MIT",
+    "main": "index.js",
+    "scripts": {
+        "start": "node src/index.js"
+    },
+    "dependencies": {
+        "body-parser": "1.18.1",
+        "express": "4.15.4",
+        "redis": "2.8.0"
+    }
+}

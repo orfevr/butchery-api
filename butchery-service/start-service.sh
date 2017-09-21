@@ -1,0 +1,2 @@
+#docker run --name some-app --link some-redis:redis -d application-that-uses-redis
+docker run --name butchery-service-api -p 8001:8001 --link butchery-redis-db:redis -m "300M"  --env-file env -d butchery-service
