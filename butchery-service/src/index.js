@@ -1,15 +1,41 @@
-const redis = require('redis');
 
-var redisHost = process.env.REDIS_PORT_6379_TCP_ADDR || '127.0.0.1';
-// TODO remove: 'process.argv[2]'
-var redisPort = process.env.REDIS_PORT_6379_TCP_PORT || process.argv[2] || 6379;
+'use strict'
 
-console.log('Connecting to Redis on [' + redisHost + ':' + redisPort + ']');
-const client = redis.createClient(redisPort, redisHost);
+const repository = require('./repository/repository');
+const server = require('./server/server');
+const di = require('./config');
+const { EventEmitter } = require('events');
+const appEvents = new EventEmitter();
 
-client.on('ready', () => {
-    console.log('Redis client ready!');
+console.log('--- Butcher API ---');
+console.log('Connecting to repository...');
+
+process.on('uncaughtException', (err) => {
+    console.error('Unhandled error: ', err);
 });
-client.on('error', (err) => {
-    console.error('Error occured: ', err);
+
+process.on('uncaughtRejection', (err, promise) => {
+    console.error('Unhandled error: ', err);
 });
+
+appEvents.on('di.ready', async (diContainer) => {
+    try {
+        const repo = await repository.connect(diContainer);
+        diContainer.repository = repo;
+        console.log('Connected. Starting server ...');
+        const app = await server.start(diContainer);
+        console.log(`Server started succesfully, running on port ${diContainer.serverSettings.port}.`);
+
+        app.on('close', () => {
+            console.log('[close] event.');
+            //diContainer.repository.disconnect();
+        });
+    } catch (error) {
+        console.error('Unhandled error: ', error);
+    }
+
+});
+
+di.init(appEvents);
+
+appEvents.emit('init');
