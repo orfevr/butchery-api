@@ -13,6 +13,7 @@ You need to have [Docker](https://docs.docker.com/engine/installation/) installe
 $ bash < rock.sh
 ```
 
+To check if everything is ok we can go and visit the following url: `http://localhost:8001/lamb/price`
 
 ### LICENSE
 The MIT License (MIT)
